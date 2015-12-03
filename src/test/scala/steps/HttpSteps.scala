@@ -1,6 +1,6 @@
 package steps
 
-import bbc.cps.scalatra-skeleton.Config
+import bbc.cps.scalatraskeleton.Config
 import dispatch.url
 import org.scalatest.MustMatchers
 
