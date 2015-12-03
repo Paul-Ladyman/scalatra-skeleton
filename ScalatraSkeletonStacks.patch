@@ -545,8 +545,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
  
    // do not commit this file
 +
-+  ScalatraSkeleton.Main.int.delete()
-+  ScalatraSkeleton.DNS.int.delete()
++  ScalatraSkeleton.Main.int.create()
++  ScalatraSkeleton.DNS.int.create()
 +
  }
 Index: src/main/resources/scalatra-skeleton/otg-dns/params-test.json
