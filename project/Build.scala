@@ -11,7 +11,7 @@ import AssemblyKeys._
 object Build extends SbtBuild {
 
   val Organization = "bbc"
-  val Name = "scalatraskeleton"
+  val Name = "scalatra-skeleton"
   val Version = Option(System.getenv("BUILD_VERSION")) getOrElse "DEV"
   val ScalaVersion = "2.10.6"
   val ScalatraVersion = "2.3.1"
