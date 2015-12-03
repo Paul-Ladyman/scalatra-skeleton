@@ -1,0 +1,1 @@
+[{"value": "172.31.11.47,172.31.25.199,172.31.43.234", "secure": false, "key": "mongodb_ip_list"}, {"value": "test-cps-vivo-sumologic-logging", "secure": false, "key": "s3_bucket_name"}]
