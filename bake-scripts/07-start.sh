@@ -2,4 +2,4 @@
 
 set -e
 
-chkconfig vivo-collaboration on
+chkconfig scalatraskeleton on

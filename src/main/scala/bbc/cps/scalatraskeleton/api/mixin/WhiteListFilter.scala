@@ -1,6 +1,6 @@
-package bbc.cps.collaboration.api.mixin
+package bbc.cps.scalatraskeleton.api.mixin
 
-import bbc.cps.collaboration.Config
+import bbc.cps.scalatraskeleton.Config
 import bbc.scala.whitelist.{Whitelist, Certificate}
 import org.scalatra.ScalatraServlet
 import org.slf4j.LoggerFactory

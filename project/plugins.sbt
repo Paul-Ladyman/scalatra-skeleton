@@ -15,3 +15,5 @@ addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5")
 addSbtPlugin("templemore" % "sbt-cucumber-plugin" % "0.8.0")
 
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.9")
+
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")

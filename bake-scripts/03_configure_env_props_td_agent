@@ -8,11 +8,11 @@ TD_AGENT_CONFIG_FILE = "/etc/bake-scripts/td-agent.conf"
 TD_AGENT_CONFIG = """
 <source>
   type tail
-  path /var/log/vivo-collaboration/output.log
+  path /var/log/scalatraskeleton/output.log
   refresh_interval 1
   read_from_head true
-  pos_file /var/log/td-agent/tmp/vivo-collaboration_output_log.pos
-  tag vivo-collaboration_output_log
+  pos_file /var/log/td-agent/tmp/scalatraskeleton_output_log.pos
+  tag scalatraskeleton_output_log
   format none
 </source>
 
@@ -46,7 +46,7 @@ TD_AGENT_CONFIG = """
   log_level error
   type s3
   s3_bucket {0}
-  path vivo-collaboration/{1}/http_access_log
+  path scalatraskeleton/{1}/http_access_log
   s3_region eu-west-1
   check_apikey_on_start true
   buffer_type memory
@@ -62,7 +62,7 @@ TD_AGENT_CONFIG = """
   log_level error
   type s3
   s3_bucket {0}
-  path vivo-collaboration/{1}/http_error_log
+  path scalatraskeleton/{1}/http_error_log
   s3_region eu-west-1
   check_apikey_on_start true
   buffer_type memory
@@ -74,11 +74,11 @@ TD_AGENT_CONFIG = """
   num_threads 1
 </match>
 
-<match vivo-collaboration_output_log>
+<match scalatraskeleton_output_log>
   log_level error
   type s3
   s3_bucket {0}
-  path vivo-collaboration/{1}/application_logs
+  path scalatraskeleton/{1}/application_logs
   s3_region eu-west-1
   check_apikey_on_start true
   buffer_type memory

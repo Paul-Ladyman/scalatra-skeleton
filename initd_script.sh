@@ -1,17 +1,17 @@
 #!/bin/sh
 #
-# vivo-collaboration service
+# scalatraskeleton service
 #
 # chkconfig:   35 99 99
-# description: vivo-collaboration service
+# description: scalatraskeleton service
 
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-exec="java -jar /usr/lib/vivo-collaboration/vivo-collaboration.jar"
-prog="vivo-collaboration"
-pidfile="/var/run/vivo-collaboration/vivo-collaboration.pid"
-output_logfile=/var/log/vivo-collaboration/output.log
+exec="java -jar /usr/lib/scalatraskeleton/scalatraskeleton.jar"
+prog="scalatraskeleton"
+pidfile="/var/run/scalatraskeleton/scalatraskeleton.pid"
+output_logfile=/var/log/scalatraskeleton/output.log
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 

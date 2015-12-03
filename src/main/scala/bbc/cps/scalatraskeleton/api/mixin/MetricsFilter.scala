@@ -21,4 +21,3 @@ trait MetricsFilter { this: ScalatraServlet =>
     statusCodes.getOrElse(status / 100, otherStatuses).mark()
   }
 }
-

@@ -1,6 +1,6 @@
 package steps
 
-import bbc.cps.collaboration.Config
+import bbc.cps.scalatra-skeleton.Config
 import dispatch.url
 import org.scalatest.MustMatchers
 
@@ -15,10 +15,6 @@ object HttpSteps extends ApiSteps with MustMatchers {
       case "PUT" => put(req)
       case _ =>
     }
-  }
-
-  When("""^I have an invalid json request body$"""){ () =>
-    RequestHolder.body = """{ invalidKey: "validValue", "validKey": invalidValue }"""
   }
 
   Then("""^the response status code is (\d+)$"""){ (status: Int) =>

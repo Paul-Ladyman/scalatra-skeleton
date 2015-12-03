@@ -1,15 +1,14 @@
-package bbc.cps.collaboration
+package bbc.cps.scalatraskeleton
 
-import bbc.cps.collaboration.Config.{Mongo, NotificationAgent}
-import bbc.cps.collaboration.api.{BaseApi, IndexApi, PostEditApi}
-import bbc.cps.collaboration.persistence.PostEditDao
-import bbc.cps.collaboration.service.{NotificationService, PostEditService}
+import bbc.cps.scalatraskeleton.Config.{Mongo, NotificationAgent}
+import bbc.cps.scalatraskeleton.api.{BaseApi, IndexApi, PostEditApi}
+import bbc.cps.scalatraskeleton.persistence.PostEditDao
+import bbc.cps.scalatraskeleton.service.{NotificationService, PostEditService}
 
 object Servlets {
   def apply(): Map[BaseApi, String] = {
     Map(
-      new IndexApi -> "/*",
-      new PostEditApi(new PostEditService(new PostEditDao(Mongo.postEditsCollection), new NotificationService(NotificationAgent()))) -> "/post-edits/*"
+      new IndexApi -> "/*"
     )
   }
 }

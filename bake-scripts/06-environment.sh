@@ -4,5 +4,4 @@
 # as detailed on this Confluence page:
 # https://confluence.dev.bbc.co.uk/display/platform/Environment+-+specific+service+configuration
 
-cat $1 > /etc/vivo-collaboration/vivo-collaboration.json
-
+cat $1 > /etc/scalatraskeleton/scalatraskeleton.json

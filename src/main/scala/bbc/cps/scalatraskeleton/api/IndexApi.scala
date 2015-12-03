@@ -1,10 +1,10 @@
-package bbc.cps.collaboration.api
+package bbc.cps.scalatraskeleton.api
 
 class IndexApi extends BaseApi {
 
   get("/") {
     contentType = "application/json"
-    """{"message":"Welcome to BBC Vivo Collaboration Service"}"""
+    """{"message":"Welcome to your new application"}"""
   }
 
   get("/status") {

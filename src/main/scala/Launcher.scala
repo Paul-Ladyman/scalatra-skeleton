@@ -16,7 +16,6 @@ object Launcher extends App {
   context.addServlet(classOf[DefaultServlet], "/")
 
   server.setHandler(context)
-
   server.start()
   server.join()
 }

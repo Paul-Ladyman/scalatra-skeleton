@@ -1,6 +1,6 @@
-package bbc.cps.collaboration.api
+package bbc.cps.scalatraskeleton.api
 
-import bbc.cps.collaboration.api.mixin.{MetricsFilter, WhiteListFilter}
+import bbc.cps.scalatraskeleton.api.mixin.{MetricsFilter, WhiteListFilter}
 import org.scalatra.ScalatraServlet
 import scala.util.control.NonFatal
 import org.slf4j.LoggerFactory

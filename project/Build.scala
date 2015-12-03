@@ -11,7 +11,7 @@ import AssemblyKeys._
 object Build extends SbtBuild {
 
   val Organization = "bbc"
-  val Name = "vivo-collaboration"
+  val Name = "scalatraskeleton"
   val Version = Option(System.getenv("BUILD_VERSION")) getOrElse "DEV"
   val ScalaVersion = "2.10.6"
   val ScalatraVersion = "2.3.1"
@@ -27,20 +27,13 @@ object Build extends SbtBuild {
     "org.json4s" %% "json4s-jackson" % "3.2.9",
     "net.databinder.dispatch" %% "dispatch-core" % "0.11.3",
     "bbc.shared" %% "cloudwatch-metrics" % "1.0.1",
-    //  This is the latest version of ReactiveMongo; currently not compatible with the Mongo versions on TEST/LIVE. Using an older version until these have been upgraded (min 2.6 required).
-    //  "org.reactivemongo" %% "reactivemongo" % "0.11.6",
-    "org.reactivemongo" %% "reactivemongo" % "0.10.0",
-    "com.amazonaws" % "aws-java-sdk" % "1.10.34",
     "bbc.shared" % "bbc-scala-whitelist" % "1.0.3",
 
     // test
     "org.scalatest" %% "scalatest" % "2.1.0" % "test",
     "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test",
     "org.mockito" % "mockito-core" % "1.9.5" % "test",
-
-    // cucumber
     "info.cukes" %% "cucumber-scala" % "1.1.6" % "compile,test",
-
     "net.databinder.dispatch" %% "dispatch-core" % "0.11.3" % "test",
 
     // jetty
