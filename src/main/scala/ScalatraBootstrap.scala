@@ -4,7 +4,6 @@ import bbc.cloudwatch.Reporter
 import bbc.cloudwatch.Metrics.{global => metricsContext}
 import bbc.cps.scalatraskeleton.Config._
 import bbc.cps.scalatraskeleton.Servlets
-import bbc.cps.scalatraskeleton.service.InactiveEditsPurgeQueueClient
 import com.amazonaws.regions.{Regions, Region}
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient
 import org.scalatra._
@@ -26,10 +25,6 @@ class ScalatraBootstrap extends LifeCycle {
 
       context.mount(servlet, endpoint)
     })
-
-    Future { blocking {
-      InactiveEditsPurgeQueueClient().processQueue()
-    }}
   }
 
   val reporter = new AtomicReference[Reporter]

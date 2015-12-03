@@ -1,4 +1,4 @@
-package bbc.cps.collaboration.api.mixin
+package bbc.cps.scalatraskeleton.api.mixin
 
 import com.codahale.metrics.Timer.Context
 import org.scalatra.ScalatraServlet
