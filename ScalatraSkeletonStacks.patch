@@ -1,0 +1,676 @@
+Index: src/main/resources/scalatra-skeleton/app/template.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/app/template.json	(revision )
++++ src/main/resources/scalatra-skeleton/app/template.json	(revision )
+@@ -0,0 +1,452 @@
++{
++    "AWSTemplateFormatVersion": "2010-09-09",
++    "Description": "scalatra-skeleton main application stack",
++    "Parameters": {
++        "DomainNameBase": {
++            "Default": "cloud.bbc.co.uk.",
++            "Type": "String",
++            "Description": "Base domain name (ending with a '.') under which new DNS entries are added"
++        },
++        "DomainNameBaseWithEnvironment": {
++            "Description": "Base domain name with environment added if environment is a non live environment (ending with a '.') under which new DNS entries are added",
++            "Default": "cloud.bbc.co.uk.",
++            "Type": "String"
++        },
++        "Environment": {
++            "Type": "String",
++            "Description": "The name of the environment. Int, Test or Live"
++        },
++        "VpcId": {
++            "Type": "String",
++            "Description": "The Id of the VPC to attach the environment to"
++        },
++        "CnameEntry": {
++            "Type": "String",
++            "Description": "The cname entry for the component"
++        },
++        "UpdatePauseTime": {
++            "Default": "PT3M",
++            "Type": "String",
++            "Description": "The time to wait between new instances coming online and the next batch being killed during an ASG update."
++        },
++        "PrivateSubnet3Id": {
++            "Type": "String",
++            "Description": "The id of private subnet 3"
++        },
++        "UpdateMinInService": {
++            "Default": "0",
++            "Type": "String",
++            "Description": "The minimum number of instances in service during an ASG update."
++        },
++        "ImageId": {
++            "Type": "String",
++            "Description": "The AMI to use for this component"
++        },
++        "MaxSize": {
++            "Default": "2",
++            "Type": "String",
++            "Description": "The maximum number of instances"
++        },
++        "KeyName": {
++            "Type": "String",
++            "Description": "Name of existing EC2 keypair to enable SSH access to the created instances"
++        },
++        "PrivateSubnet1Id": {
++            "Type": "String",
++            "Description": "The id of private subnet 1"
++        },
++        "BastionAccessSecurityGroup": {
++            "Type": "String",
++            "Description": "The security group that allows access from the bastions"
++        },
++        "MinSize": {
++            "Default": "2",
++            "Type": "String",
++            "Description": "The minimum number of instances"
++        },
++        "PublicSubnet1Id": {
++            "Type": "String",
++            "Description": "The id of public subnet 1"
++        },
++        "PublicSubnet2Id": {
++            "Type": "String",
++            "Description": "The id of public subnet 2"
++        },
++        "PrivateSubnet2Id": {
++            "Type": "String",
++            "Description": "The id of private subnet 2"
++        },
++        "UpdateMaxBatchSize": {
++            "Default": "1",
++            "Type": "String",
++            "Description": "The maximum number of instances to be killed at one time during an ASG update."
++        },
++        "InstanceType": {
++            "Default": "m1.small",
++            "Type": "String",
++            "Description": "The size of the instances"
++        },
++        "PublicSubnet3Id": {
++            "Type": "String",
++            "Description": "The id of public subnet 3"
++        },
++        "S3SumologicLoggingBucket": {
++            "Type": "String",
++            "Description": "The location of the CPS Vivo sumologic bucket for all logging."
++        }
++    },
++    "Resources": {
++        "LoadBalancerSecurityGroup": {
++            "Type": "AWS::EC2::SecurityGroup",
++            "Properties": {
++                "SecurityGroupIngress": [
++                    {
++                        "ToPort": "443",
++                        "IpProtocol": "tcp",
++                        "FromPort": "443",
++                        "CidrIp": "0.0.0.0/0"
++                    }
++                ],
++                "VpcId": {
++                    "Ref": "VpcId"
++                },
++                "GroupDescription": "An ELB group allowing access only to from the corresponding component"
++            }
++        },
++        "ComponentAutoScalingGroup": {
++            "Type": "AWS::AutoScaling::AutoScalingGroup",
++            "UpdatePolicy": {
++                "AutoScalingRollingUpdate": {
++                    "PauseTime": {
++                        "Ref": "UpdatePauseTime"
++                    },
++                    "MaxBatchSize": {
++                        "Ref": "UpdateMaxBatchSize"
++                    },
++                    "MinInstancesInService": {
++                        "Ref": "UpdateMinInService"
++                    }
++                }
++            },
++            "Properties": {
++                "LoadBalancerNames": [
++                    {
++                        "Ref": "ComponentElasticLoadBalancer"
++                    }
++                ],
++                "MinSize": {
++                    "Ref": "MinSize"
++                },
++                "MaxSize": {
++                    "Ref": "MaxSize"
++                },
++                "VPCZoneIdentifier": [
++                    {
++                        "Ref": "PrivateSubnet1Id"
++                    },
++                    {
++                        "Ref": "PrivateSubnet2Id"
++                    },
++                    {
++                        "Ref": "PrivateSubnet3Id"
++                    }
++                ],
++                "LaunchConfigurationName": {
++                    "Ref": "ComponentLaunchConfiguration"
++                },
++                "AvailabilityZones": [
++                    "eu-west-1a",
++                    "eu-west-1b",
++                    "eu-west-1c"
++                ],
++                "HealthCheckType": "ELB",
++                "HealthCheckGracePeriod": 180,
++                "Tags": [
++                    {
++                        "Value": "scalatra-skeleton",
++                        "PropagateAtLaunch": true,
++                        "Key": "BBCProject"
++                    },
++                    {
++                        "Value": {
++                            "Ref": "Environment"
++                        },
++                        "PropagateAtLaunch": true,
++                        "Key": "BBCEnvironment"
++                    },
++                    {
++                        "Value": {
++                            "Fn::Join": [
++                                "",
++                                [
++                                    {
++                                        "Ref": "Environment"
++                                    },
++                                    "scalatra-skeleton"
++                                ]
++                            ]
++                        },
++                        "PropagateAtLaunch": true,
++                        "Key": "Name"
++                    },
++                    {
++                        "Value": "scalatra-skeleton",
++                        "PropagateAtLaunch": true,
++                        "Key": "BBCComponent"
++                    }
++                ]
++            }
++        },
++        "ComponentElasticLoadBalancer": {
++            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
++            "Properties": {
++                "Subnets": [
++                    {
++                        "Ref": "PublicSubnet1Id"
++                    },
++                    {
++                        "Ref": "PublicSubnet2Id"
++                    },
++                    {
++                        "Ref": "PublicSubnet3Id"
++                    }
++                ],
++                "Listeners": [
++                    {
++                        "InstancePort": "7443",
++                        "LoadBalancerPort": "443",
++                        "Protocol": "tcp",
++                        "InstanceProtocol": "tcp"
++                    }
++                ],
++                "SecurityGroups": [
++                    {
++                        "Ref": "LoadBalancerSecurityGroup"
++                    }
++                ],
++                "HealthCheck": {
++                    "HealthyThreshold": "3",
++                    "Interval": "15",
++                    "Target": "HTTP:7080/status",
++                    "Timeout": "10",
++                    "UnhealthyThreshold": "3"
++                },
++                "ConnectionDrainingPolicy": {
++                    "Enabled": "true",
++                    "Timeout": "30"
++                },
++                "CrossZone": true
++            }
++        },
++        "ComponentLaunchConfiguration": {
++            "Type": "AWS::AutoScaling::LaunchConfiguration",
++            "Properties": {
++                "ImageId": {
++                    "Ref": "ImageId"
++                },
++                "KeyName": {
++                    "Ref": "KeyName"
++                },
++                "EbsOptimized": false,
++                "SecurityGroups": [
++                    {
++                        "Ref": "BastionAccessSecurityGroup"
++                    },
++                    {
++                        "Ref": "ComponentSecurityGroup"
++                    }
++                ],
++                "IamInstanceProfile": {
++                    "Ref": "ComponentInstanceProfile"
++                },
++                "InstanceType": {
++                    "Ref": "InstanceType"
++                }
++            }
++        },
++        "ComponentInstanceProfile": {
++            "Type": "AWS::IAM::InstanceProfile",
++            "Properties": {
++                "Path": "/",
++                "Roles": [
++                    {
++                        "Ref": "ComponentRole"
++                    }
++                ]
++            }
++        },
++        "ComponentScalingPolicy": {
++            "Type": "AWS::AutoScaling::ScalingPolicy",
++            "Properties": {
++                "ScalingAdjustment": 1,
++                "AutoScalingGroupName": {
++                    "Ref": "ComponentAutoScalingGroup"
++                },
++                "AdjustmentType": "ChangeInCapacity"
++            }
++        },
++        "ComponentDNS": {
++            "Type": "AWS::Route53::RecordSet",
++            "Properties": {
++                "HostedZoneName": {
++                    "Ref": "DomainNameBase"
++                },
++                "Name": {
++                    "Fn::Join": [
++                        ".",
++                        [
++                            {
++                                "Ref": "CnameEntry"
++                            },
++                            {
++                                "Ref": "DomainNameBaseWithEnvironment"
++                            }
++                        ]
++                    ]
++                },
++                "Type": "CNAME",
++                "ResourceRecords": [
++                    {
++                        "Fn::GetAtt": [
++                            "ComponentElasticLoadBalancer",
++                            "DNSName"
++                        ]
++                    }
++                ],
++                "TTL": "60"
++            }
++        },
++        "ComponentPolicy": {
++            "Type": "AWS::IAM::Policy",
++            "Properties": {
++                "PolicyName": "ComponentPolicy",
++                "PolicyDocument": {
++                    "Statement": [
++                        {
++                            "Action": [
++                                "sts:AssumeRole"
++                            ],
++                            "Resource": [
++                                "*"
++                            ],
++                            "Effect": "Allow"
++                        },
++                        {
++                            "Action": [
++                                "cloudwatch:*"
++                            ],
++                            "Resource": [
++                                "*"
++                            ],
++                            "Effect": "Allow"
++                        },
++                        {
++                            "Action": [
++                                "cloudformation:Describe*"
++                            ],
++                            "Resource": [
++                                "*"
++                            ],
++                            "Effect": "Allow"
++                        },
++                        {
++                            "Action": [
++                                "ec2:Describe*"
++                            ],
++                            "Resource": [
++                                "*"
++                            ],
++                            "Effect": "Allow"
++                        },
++                        {
++                            "Action": [
++                                "s3:Get*",
++                                "s3:List*",
++                                "s3:Put*",
++                                "s3:Post*"
++                            ],
++                            "Resource": [
++                                {
++                                    "Ref": "S3SumologicLoggingBucket"
++                                },
++                                {
++                                    "Fn::Join": [
++                                        "",
++                                        [
++                                            {
++                                                "Ref": "S3SumologicLoggingBucket"
++                                            },
++                                            "/scalatra-skeleton/*"
++                                        ]
++                                    ]
++                                }
++                            ],
++                            "Effect": "Allow"
++                        }
++                    ]
++                },
++                "Roles": [
++                    {
++                        "Ref": "ComponentRole"
++                    }
++                ]
++            }
++        },
++        "ComponentSecurityGroup": {
++            "Type": "AWS::EC2::SecurityGroup",
++            "Properties": {
++                "SecurityGroupIngress": [
++                    {
++                        "ToPort": "7080",
++                        "IpProtocol": "tcp",
++                        "SourceSecurityGroupId": {
++                            "Ref": "LoadBalancerSecurityGroup"
++                        },
++                        "FromPort": "7080"
++                    },
++                    {
++                        "ToPort": "7443",
++                        "IpProtocol": "tcp",
++                        "SourceSecurityGroupId": {
++                            "Ref": "LoadBalancerSecurityGroup"
++                        },
++                        "FromPort": "7443"
++                    },
++                    {
++                        "ToPort": "123",
++                        "IpProtocol": "udp",
++                        "SourceSecurityGroupId": {
++                            "Ref": "LoadBalancerSecurityGroup"
++                        },
++                        "FromPort": "123"
++                    }
++                ],
++                "VpcId": {
++                    "Ref": "VpcId"
++                },
++                "GroupDescription": "A component security group allowing access only from the corresponding ELB"
++            }
++        },
++        "ComponentRole": {
++            "Type": "AWS::IAM::Role",
++            "Properties": {
++                "Path": "/",
++                "AssumeRolePolicyDocument": {
++                    "Statement": [
++                        {
++                            "Action": [
++                                "sts:AssumeRole"
++                            ],
++                            "Effect": "Allow",
++                            "Principal": {
++                                "Service": [
++                                    "ec2.amazonaws.com"
++                                ]
++                            }
++                        }
++                    ]
++                }
++            }
++        }
++    }
++}
+\ No newline at end of file
+Index: src/main/resources/scalatra-skeleton/app/params-test.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/app/params-test.json	(revision )
++++ src/main/resources/scalatra-skeleton/app/params-test.json	(revision )
+@@ -0,0 +1,14 @@
++{
++  "DomainNameBase": "e06c103ce59d1694.xhst.bbci.co.uk.",
++  "DomainNameBaseWithEnvironment": "test.e06c103ce59d1694.xhst.bbci.co.uk.",
++  "MinSize": "2",
++  "CnameEntry": "scalatra-skeleton",
++  "UpdatePauseTime": "PT2M",
++  "UpdateMinInService": "2",
++  "Environment": "test",
++  "KeyName": "cosmos",
++  "MaxSize": "3",
++  "UpdateMaxBatchSize": "1",
++  "InstanceType": "t2.micro",
++  "S3SumologicLoggingBucket": "arn:aws:s3:::test-cps-vivo-sumologic-logging"
++}
+Index: src/main/resources/scalatra-skeleton/otg-dns/params-live.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/otg-dns/params-live.json	(revision )
++++ src/main/resources/scalatra-skeleton/otg-dns/params-live.json	(revision )
+@@ -0,0 +1,6 @@
++{
++  "Backend": "vivo-stats-api.b7a6e05f47d53d29.xhst.bbci.co.uk",
++  "ComponentName": "scalatra-skeleton",
++  "Environment": ".",
++  "HostedZoneName": "api.bbci.co.uk."
++}
+\ No newline at end of file
+Index: src/main/resources/scalatra-skeleton/app/params-int.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/app/params-int.json	(revision )
++++ src/main/resources/scalatra-skeleton/app/params-int.json	(revision )
+@@ -0,0 +1,14 @@
++{
++  "DomainNameBase": "e06c103ce59d1694.xhst.bbci.co.uk.",
++  "DomainNameBaseWithEnvironment": "int.e06c103ce59d1694.xhst.bbci.co.uk.",
++  "MinSize": "2",
++  "CnameEntry": "scalatra-skeleton",
++  "UpdatePauseTime": "PT2M",
++  "UpdateMinInService": "2",
++  "Environment": "int",
++  "KeyName": "cosmos",
++  "MaxSize": "3",
++  "UpdateMaxBatchSize": "1",
++  "InstanceType": "t2.micro",
++  "S3SumologicLoggingBucket": "arn:aws:s3:::test-cps-vivo-sumologic-logging"
++}
+Index: src/main/resources/scalatra-skeleton/otg-dns/params-int.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/otg-dns/params-int.json	(revision )
++++ src/main/resources/scalatra-skeleton/otg-dns/params-int.json	(revision )
+@@ -0,0 +1,6 @@
++{
++  "Backend": "vivo-stats-api.int.e06c103ce59d1694.xhst.bbci.co.uk",
++  "ComponentName": "vivo-stats-api",
++  "Environment": ".int.",
++  "HostedZoneName": "api.bbci.co.uk."
++}
+\ No newline at end of file
+Index: src/main/scala/bbc/cps/Main.scala
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/scala/bbc/cps/Main.scala	(revision 3244fc63ecf26cdc3942365e2e3bb530e2f2398f)
++++ src/main/scala/bbc/cps/Main.scala	(revision )
+@@ -13,4 +13,8 @@
+   //VivoClient.Main.test.update()
+ 
+   // do not commit this file
++
++  ScalatraSkeleton.Main.int.delete()
++  ScalatraSkeleton.DNS.int.delete()
++
+ }
+Index: src/main/resources/scalatra-skeleton/otg-dns/params-test.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/otg-dns/params-test.json	(revision )
++++ src/main/resources/scalatra-skeleton/otg-dns/params-test.json	(revision )
+@@ -0,0 +1,6 @@
++{
++  "Backend": "vivo-stats-api.test.e06c103ce59d1694.xhst.bbci.co.uk",
++  "ComponentName": "scalatra-skeleton",
++  "Environment": ".test.",
++  "HostedZoneName": "api.bbci.co.uk."
++}
+\ No newline at end of file
+Index: src/main/scala/bbc/cps/Stacks.scala
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/scala/bbc/cps/Stacks.scala	(revision 3244fc63ecf26cdc3942365e2e3bb530e2f2398f)
++++ src/main/scala/bbc/cps/Stacks.scala	(revision )
+@@ -8,6 +8,11 @@
+ 
+   import Environments._
+ 
++  object ScalatraSkeleton extends Component("scalatra-skeleton") {
++    val Main = ComponentStack("app", isMain = true)(CPSEnvs)
++    val DNS = ComponentStack("otg-dns")(DNSEnvs)
++  }
++
+   object CpsJenkinsMaster extends Component("cps-jenkins-master") {
+     val Main = ComponentStack("infrastructure", isMain = true)(CPSEnvs)
+     val DNS = ComponentStack("dns")(BBCEnvs)
+Index: src/main/resources/scalatra-skeleton/app/params-live.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/app/params-live.json	(revision )
++++ src/main/resources/scalatra-skeleton/app/params-live.json	(revision )
+@@ -0,0 +1,14 @@
++{
++  "DomainNameBase": "b7a6e05f47d53d29.xhst.bbci.co.uk.",
++  "DomainNameBaseWithEnvironment": "b7a6e05f47d53d29.xhst.bbci.co.uk.",
++  "MinSize": "2",
++  "CnameEntry": "scalatra-skeleton",
++  "UpdatePauseTime": "PT2M",
++  "UpdateMinInService": "2",
++  "Environment": "live",
++  "KeyName": "cosmos",
++  "MaxSize": "3",
++  "UpdateMaxBatchSize": "1",
++  "InstanceType": "t2.micro",
++  "S3SumologicLoggingBucket": "arn:aws:s3:::live-cps-vivo-sumologic-logging"
++}
+Index: src/main/resources/scalatra-skeleton/otg-dns/template.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/otg-dns/template.json	(revision )
++++ src/main/resources/scalatra-skeleton/otg-dns/template.json	(revision )
+@@ -0,0 +1,60 @@
++{
++  "AWSTemplateFormatVersion": "2010-09-09",
++  "Parameters": {
++    "Environment": {
++      "Default": ".",
++      "Type": "String",
++      "Description": "Environment name with leading and trailing dots (e.g. '.int.', '.test.'). For your live component use '.' instead of '.live.'."
++    },
++    "ComponentName": {
++      "Type": "String",
++      "Description": "Your component name."
++    },
++    "HostedZoneName": {
++      "AllowedPattern": ".*\\.",
++      "Type": "String",
++      "Description": "Domain to use with trailing dot (e.g. 'api.bbci.co.uk.', 'api.bbc.co.uk.' or 'api.bbc.com.')."
++    },
++    "Backend": {
++      "Type": "String",
++      "Description": "Backend hostname for your component (e.g. '[component-name].[env.]account-identifier.xhst.bbci.co.uk')."
++    }
++  },
++  "Resources": {
++    "RecordSetGroup": {
++      "Type": "AWS::Route53::RecordSetGroup",
++      "Properties": {
++        "HostedZoneName": {
++          "Ref": "HostedZoneName"
++        },
++        "RecordSets": [
++          {
++            "ResourceRecords": [
++              {
++                "Ref": "Backend"
++              }
++            ],
++            "Type": "CNAME",
++            "Name": {
++              "Fn::Join": [
++                "",
++                [
++                  {
++                    "Ref": "ComponentName"
++                  },
++                  {
++                    "Ref": "Environment"
++                  },
++                  {
++                    "Ref": "HostedZoneName"
++                  }
++                ]
++              ]
++            },
++            "TTL": "3600"
++          }
++        ]
++      }
++    }
++  }
++}
+\ No newline at end of file
