@@ -459,6 +459,28 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +    }
 +}
 \ No newline at end of file
+Index: src/main/resources/scalatra-skeleton/app/params-int.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/scalatra-skeleton/app/params-int.json	(revision )
++++ src/main/resources/scalatra-skeleton/app/params-int.json	(revision )
+@@ -0,0 +1,14 @@
++{
++  "DomainNameBase": "e06c103ce59d1694.xhst.bbci.co.uk.",
++  "DomainNameBaseWithEnvironment": "int.e06c103ce59d1694.xhst.bbci.co.uk.",
++  "MinSize": "2",
++  "CnameEntry": "scalatra-skeleton",
++  "UpdatePauseTime": "PT2M",
++  "UpdateMinInService": "2",
++  "Environment": "int",
++  "KeyName": "cosmos",
++  "MaxSize": "3",
++  "UpdateMaxBatchSize": "1",
++  "InstanceType": "t2.micro",
++  "S3SumologicLoggingBucket": "arn:aws:s3:::test-cps-vivo-sumologic-logging"
++}
 Index: src/main/resources/scalatra-skeleton/app/params-test.json
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -496,28 +518,6 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +  "HostedZoneName": "api.bbci.co.uk."
 +}
 \ No newline at end of file
-Index: src/main/resources/scalatra-skeleton/app/params-int.json
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
---- src/main/resources/scalatra-skeleton/app/params-int.json	(revision )
-+++ src/main/resources/scalatra-skeleton/app/params-int.json	(revision )
-@@ -0,0 +1,14 @@
-+{
-+  "DomainNameBase": "e06c103ce59d1694.xhst.bbci.co.uk.",
-+  "DomainNameBaseWithEnvironment": "int.e06c103ce59d1694.xhst.bbci.co.uk.",
-+  "MinSize": "2",
-+  "CnameEntry": "scalatra-skeleton",
-+  "UpdatePauseTime": "PT2M",
-+  "UpdateMinInService": "2",
-+  "Environment": "int",
-+  "KeyName": "cosmos",
-+  "MaxSize": "3",
-+  "UpdateMaxBatchSize": "1",
-+  "InstanceType": "t2.micro",
-+  "S3SumologicLoggingBucket": "arn:aws:s3:::test-cps-vivo-sumologic-logging"
-+}
 Index: src/main/resources/scalatra-skeleton/otg-dns/params-int.json
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -538,17 +538,24 @@ IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- src/main/scala/bbc/cps/Main.scala	(revision 3244fc63ecf26cdc3942365e2e3bb530e2f2398f)
+--- src/main/scala/bbc/cps/Main.scala	(revision b950fe1640e409dad1ce36345ed0ccce0f027231)
 +++ src/main/scala/bbc/cps/Main.scala	(revision )
-@@ -13,4 +13,8 @@
-   //VivoClient.Main.test.update()
+@@ -1,5 +1,7 @@
+ package bbc.cps
+ 
++import bbc.cps.Stacks.ScalatraSkeleton
++
+ object Main extends App {
+ 
+   // Example usage:
+@@ -12,4 +14,6 @@
  
    // do not commit this file
-+
+ 
 +  ScalatraSkeleton.Main.int.create()
 +  ScalatraSkeleton.DNS.int.create()
-+
  }
+\ No newline at end of file
 Index: src/main/resources/scalatra-skeleton/otg-dns/params-test.json
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -564,25 +571,6 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +  "HostedZoneName": "api.bbci.co.uk."
 +}
 \ No newline at end of file
-Index: src/main/scala/bbc/cps/Stacks.scala
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
---- src/main/scala/bbc/cps/Stacks.scala	(revision 3244fc63ecf26cdc3942365e2e3bb530e2f2398f)
-+++ src/main/scala/bbc/cps/Stacks.scala	(revision )
-@@ -8,6 +8,11 @@
- 
-   import Environments._
- 
-+  object ScalatraSkeleton extends Component("scalatra-skeleton") {
-+    val Main = ComponentStack("app", isMain = true)(CPSEnvs)
-+    val DNS = ComponentStack("otg-dns")(DNSEnvs)
-+  }
-+
-   object CpsJenkinsMaster extends Component("cps-jenkins-master") {
-     val Main = ComponentStack("infrastructure", isMain = true)(CPSEnvs)
-     val DNS = ComponentStack("dns")(BBCEnvs)
 Index: src/main/resources/scalatra-skeleton/app/params-live.json
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -605,6 +593,25 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +  "InstanceType": "t2.micro",
 +  "S3SumologicLoggingBucket": "arn:aws:s3:::live-cps-vivo-sumologic-logging"
 +}
+Index: src/main/scala/bbc/cps/Stacks.scala
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/scala/bbc/cps/Stacks.scala	(revision b950fe1640e409dad1ce36345ed0ccce0f027231)
++++ src/main/scala/bbc/cps/Stacks.scala	(revision )
+@@ -8,6 +8,11 @@
+ 
+   import Environments._
+ 
++  object ScalatraSkeleton extends Component("scalatra-skeleton") {
++    val Main = ComponentStack("app", isMain = true)(CPSEnvs)
++    val DNS = ComponentStack("otg-dns")(DNSEnvs)
++  }
++
+   object VivoScalatraStatsAPI extends Component("vivo-scalatra-stats-api") {
+     val Main = ComponentStack("app", isMain = true)(CPSEnvs)
+     val DNS = ComponentStack("otg-dns")(DNSEnvs)
 Index: src/main/resources/scalatra-skeleton/otg-dns/template.json
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
